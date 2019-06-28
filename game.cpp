@@ -14,14 +14,17 @@ void draw_shar_3D (int *x, int *y,
 void game_ball_3D (int x1, int y1, int vx1, int vy1,
                    int x2, int y2, int vx2, int vy2,
                    int x3, int y3, int vx3, int vy3,
-                   int x4, int y4, int vx4, int vy4);
+                   int x4, int y4, int vx4, int vy4,
+                   double dt);
+
 
 
 double dist (int x1, int y1,
-          int x2, int y2);
+             int x2, int y2);
 
 
-void move_game_ball (int *x, int *y, int *vx, int *vy);
+void move_game_ball (int *x, int *y, int *vx, int *vy,
+                     double *dt);
 
 
 void control_game_ball (int *vx, int *vy,
@@ -37,7 +40,8 @@ int main()
   game_ball_3D (4, 10, 5, 5,
                 785, 10, 5, 5,
                 795, 585, 5, 5,
-                5, 585, 5, 5);
+                5, 585, 5, 5,
+                1);
 
 
   //move_game_ball ();
@@ -47,7 +51,7 @@ int main()
 
 
   /*draw_shar_3D (400, 300,
-                  100,
+                  2,
                   0, 0);*/
 
 
@@ -77,16 +81,12 @@ void draw_shar_3D (int *x, int *y,
 {
   int t = 0;
 
-  int tmp_rad;
 
-  COLORREF tmp_color;
-
-
-  while (t <= 100)
+  while (t <= 50)
   {
-    tmp_rad = rmax - (rmax / 100.0) * t;
-    tmp_color = RGB (color1 + (color1 / 50.0) * t,
-                     color3 + (color3 / 50.0) * t, color2 + (color2 / 50.0) * t );
+    int tmp_rad = rmax - (rmax / 50.0) * t;
+    COLORREF tmp_color = RGB (color1 + (color1 / 25.0) * t,
+                              color3 + (color3 / 25.0) * t, color2 + (color2 / 25.0) * t );
 
     shar_3D (*x, *y, tmp_rad, tmp_color);
 
@@ -108,13 +108,9 @@ double dist (int x1, int y1, int x2, int y2)
 void game_ball_3D (int x1, int y1, int vx1, int vy1,
                    int x2, int y2, int vx2, int vy2,
                    int x3, int y3, int vx3, int vy3,
-                   int x4, int y4, int vx4, int vy4)
+                   int x4, int y4, int vx4, int vy4,
+                   double dt)
 {
-  int dt = 1;
-
-  double d1, d2, d3, d4;
-
-
   while (true)
   {
     txSetColor (TX_BLACK);
@@ -123,19 +119,20 @@ void game_ball_3D (int x1, int y1, int vx1, int vy1,
 
     txClear ();
 
-    d1 = dist (x1, y1,
-               x3, y3);
-    d2 = dist (x1, y1,
-               x4, y4);
+
+    double d1 = dist (x1, y1,
+                      x3, y3);
+    double d2 = dist (x1, y1,
+                      x4, y4);
 
 
-    d3 = dist (x2, y2,
-               x3, y3);
-    d4 = dist (x2, y2,
-               x4, y4);
+    double d3 = dist (x2, y2,
+                      x3, y3);
+    double d4 = dist (x2, y2,
+                      x4, y4);
 
 
-    if (d1 < 30 || d2 < 30 || d3 < 30 || d4 < 30)
+    if (d1 < 150 || d2 < 150 || d3 < 150 || d4 < 150)
     {
       txMessageBox ("You Lose");
 
@@ -144,31 +141,31 @@ void game_ball_3D (int x1, int y1, int vx1, int vy1,
 
 
     control_game_ball (&vx1, &vy1, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_SPACE);
-    move_game_ball (&x1, &y1, &vx1, &vy1);
+    move_game_ball (&x1, &y1, &vx1, &vy1, &dt);
 
 
     draw_shar_3D (&x1, &y1,
-                  100,
+                  50,
                   80, 0, 0);
 
 
     control_game_ball (&vx2, &vy2, 'W', 'S', 'A', 'D', VK_SPACE);
-    move_game_ball (&x2, &y2, &vx2, &vy2);
+    move_game_ball (&x2, &y2, &vx2, &vy2, &dt);
 
 
     draw_shar_3D (&x2, &y2,
-                  100,
+                  50,
                   0, 0, 80);
 
 
-    move_game_ball (&x3, &y3, &vx3, &vy3);
+    move_game_ball (&x3, &y3, &vx3, &vy3, &dt);
 
     draw_shar_3D (&x3, &y3,
                   100,
                   0, 80, 0);
 
 
-    move_game_ball (&x4, &y4, &vx4, &vy4);
+    move_game_ball (&x4, &y4, &vx4, &vy4, &dt);
 
     draw_shar_3D (&x4, &y4,
                   100,
@@ -182,10 +179,9 @@ void game_ball_3D (int x1, int y1, int vx1, int vy1,
 
 
 
-void move_game_ball (int *x, int *y, int *vx, int *vy)
+void move_game_ball (int *x, int *y, int *vx, int *vy,
+                     double *dt)
 {
-  int dt = 1;
-
   if ((*x) < 0)
     (*vx) = - (*vx);
 
@@ -199,9 +195,9 @@ void move_game_ball (int *x, int *y, int *vx, int *vy)
     (*vy) = - (*vy);
 
 
-  *x = *x + *vx * dt;
+  *x = *x + *vx * *dt;
 
-  *y = *y + *vy * dt;
+  *y = *y + *vy * *dt;
 }
 
 
@@ -210,8 +206,6 @@ void move_game_ball (int *x, int *y, int *vx, int *vy)
 void control_game_ball (int *vx, int *vy,
                         int up, int down, int left, int right, int space)
 {
-  int dt = 1;
-
   if (GetAsyncKeyState (up))
     (*vy)--;
 
