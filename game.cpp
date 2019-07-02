@@ -19,9 +19,14 @@ void game_ball_3D (int x1, int y1, int vx1, int vy1,
 
 
 
-double dist (int x1, int y1,
-             int x2, int y2);
+double dist1 (int x1, int y1,
+              int x2, int y2);
 
+
+void dist2 (int x1, int y1,
+            int x2, int y2,
+            int x3, int y3,
+            int x4, int y4);
 
 void move_game_ball (int *x, int *y, int *vx, int *vy,
                      double *dt);
@@ -97,7 +102,7 @@ void draw_shar_3D (int *x, int *y,
 
 
 
-double dist (int x1, int y1, int x2, int y2)
+double dist1 (int x1, int y1, int x2, int y2)
 {
   return sqrt ((x2  - x1) * (x2  - x1) + (y2 - y1) * (y2 - y1));
 }
@@ -119,7 +124,6 @@ void game_ball_3D (int x1, int y1, int vx1, int vy1,
 
     txClear ();
 
-
     double d1 = dist (x1, y1,
                       x3, y3);
     double d2 = dist (x1, y1,
@@ -130,6 +134,23 @@ void game_ball_3D (int x1, int y1, int vx1, int vy1,
                       x3, y3);
     double d4 = dist (x2, y2,
                       x4, y4);
+
+
+    double d5 = dist (x1, y1,
+                      x2, y2);
+    double d6 = dist (x2, y2,
+                      x1, y1);
+
+
+    if (d5 < 75 || d6 < 75)
+    {
+        (vx1 = - vx1);
+        (vy1 = - vy1);
+
+
+        (vx2 = - vx2);
+        (vy2 = - vy2);
+    }
 
 
     if (d1 < 150 || d2 < 150 || d3 < 150 || d4 < 150)
@@ -198,6 +219,7 @@ void move_game_ball (int *x, int *y, int *vx, int *vy,
   *x = *x + *vx * *dt;
 
   *y = *y + *vy * *dt;
+
 }
 
 
@@ -225,3 +247,6 @@ void control_game_ball (int *vx, int *vy,
   if (GetAsyncKeyState (space))
     (*vy) = 0;
 }
+
+
+
